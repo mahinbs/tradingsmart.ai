@@ -1,0 +1,789 @@
+@import "tailwindcss";
+
+html {
+  background-color: #111827;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom design tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(195 100% 45%), hsl(213 100% 60%));
+    --gradient-card: linear-gradient(180deg, hsl(220 15% 10%), hsl(220 15% 8%));
+    --shadow-glow: 0 0 30px hsl(195 100% 45% / 0.15);
+    --shadow-card: 0 8px 24px hsl(0 0% 0% / 0.4);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 0 0% 100%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 100%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 0 0% 100%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    /* Use raw CSS instead of @apply border-border to avoid unknown utility errors */
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    font-display: swap;
+    font-optical-sizing: auto;
+    scroll-behavior: auto;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: clip;
+    width: 100%;
+  }
+
+  body {
+    /* Use raw CSS instead of @apply bg-background text-foreground to avoid unknown utility errors */
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: "Inter", "Inter Placeholder", sans-serif;
+    font-display: swap;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: clip;
+    width: 100%;
+    /* Improve text rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Optimize touch events */
+    touch-action: manipulation;
+  }
+
+  /* Make all text elements white except headings */
+  p,
+  span,
+  div,
+  li,
+  td,
+  th,
+  label,
+  small {
+    /* Use raw CSS instead of @apply text-white to avoid unknown utility errors */
+    color: #ffffff;
+  }
+
+  /* Mobile viewport optimization */
+  @media screen and (max-width: 768px) {
+    html {
+      font-size: 16px; /* Prevent zoom on form inputs */
+    }
+
+    body {
+      /* Improve scroll performance on mobile */
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  /* Enhanced font loading optimization */
+  img,
+  video {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 300px;
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+  }
+
+  /* Optimize heavy backdrop blur elements */
+  .backdrop-blur-xl,
+  .backdrop-blur-md {
+    contain: layout style paint;
+    will-change: auto;
+  }
+
+  /* Optimized background images for better performance */
+  [style*="background-image"] {
+    will-change: auto;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* Mobile touch optimization */
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+  }
+
+  /* Ensure minimum touch target size for mobile */
+  @media (max-width: 768px) {
+    button,
+    a,
+    input,
+    select,
+    textarea {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Improve form element visibility on mobile */
+    input,
+    select,
+    textarea {
+      font-size: 16px; /* Prevent zoom on iOS */
+    }
+  }
+}
+
+@layer utilities {
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  /* Mobile-optimized touch manipulation */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .container{
+    @apply mx-auto max-w-[85rem] px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Mobile-friendly container spacing */
+  .mobile-container {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Responsive text sizes */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl lg:text-4xl;
+  }
+
+  .text-responsive-3xl {
+    @apply text-3xl sm:text-4xl lg:text-5xl;
+  }
+
+  /* Mobile-optimized spacing */
+  .space-y-mobile {
+    @apply space-y-4 sm:space-y-6 lg:space-y-8;
+  }
+
+  .space-x-mobile {
+    @apply space-x-2 sm:space-x-4 lg:space-x-6;
+  }
+
+  /* Enhanced GPU-accelerated animations */
+  .gpu-accelerate {
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    contain: layout style paint;
+  }
+
+  /* Optimize layout stability */
+  .prevent-layout-shift {
+    contain: layout style paint;
+    content-visibility: auto;
+  }
+
+  /* Mobile-optimized backdrop blur */
+  .backdrop-blur-mobile {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  @media (max-width: 768px) {
+    .backdrop-blur-mobile {
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+  }
+
+  /* Optimized backdrop blur for better performance */
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .backdrop-blur-md {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .backdrop-blur-heavy {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Mobile-optimized animations */
+  .animate-fade-in-mobile {
+    animation: fade-in-mobile 0.3s ease-out forwards;
+  }
+
+  /* Lighter pulse animation for mobile */
+  .animate-pulse-mobile {
+    animation: pulse-mobile 2s ease-in-out infinite;
+  }
+
+  /* Mobile-friendly hover effects */
+  @media (hover: hover) {
+    .hover\:scale-102:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  /* Mobile tap effects */
+  .tap-highlight {
+    -webkit-tap-highlight-color: rgba(0, 255, 255, 0.1);
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 10px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes fade-in-mobile {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 5px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes pulse-light {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+
+  @keyframes pulse-mobile {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.9;
+    }
+  }
+
+  /* Enhanced scroll performance */
+  .scroll-smooth {
+    scroll-behavior: auto;
+  }
+
+  /* Mobile-optimized gradients */
+  .gradient-mobile {
+    background: linear-gradient(
+      135deg,
+      rgba(6, 182, 212, 0.1) 0%,
+      rgba(59, 130, 246, 0.1) 100%
+    );
+  }
+
+  /* Container queries for better performance */
+  .container-optimized {
+    container-type: inline-size;
+    contain: layout style paint;
+  }
+
+  /* Performance optimized transitions */
+  .transition-optimized {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Mobile-optimized button styles */
+  .btn-mobile {
+    @apply min-h-[44px] px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 touch-manipulation;
+  }
+
+  .btn-mobile-sm {
+    @apply min-h-[40px] px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 touch-manipulation;
+  }
+
+  /* Mobile-friendly card spacing */
+  .card-mobile {
+    @apply p-4 sm:p-6 rounded-lg;
+  }
+
+  /* Safe area padding for mobile devices */
+  .safe-area-padding {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Enhanced scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ffff, #0080ff);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00e6e6, #0066cc);
+}
+
+/* Enhanced performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Reduce motion for better mobile performance */
+  .complex-animation {
+    animation: none !important;
+  }
+
+  /* Optimize heavy effects for mobile */
+  .backdrop-blur-xl,
+  .backdrop-blur-lg {
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+
+  /* Improve touch responsiveness */
+  * {
+    -webkit-touch-callout: none;
+  }
+}
+
+/* Critical CSS for above-the-fold content */
+.hero-section {
+  contain: layout style paint;
+  content-visibility: auto;
+  contain-intrinsic-size: 100vw 100vh;
+}
+
+/* Enhanced image optimization */
+img {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 200px;
+  transform: translate3d(0, 0, 0);
+}
+
+img.loaded,
+img[loading="lazy"] {
+  content-visibility: visible;
+}
+
+/* Enhanced performance hints */
+.complex-bg {
+  will-change: auto;
+  transform: translate3d(0, 0, 0);
+  contain: layout style paint;
+}
+
+/* Enhanced review card performance */
+.review-card {
+  contain: layout style paint;
+  will-change: auto;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 350px;
+}
+
+.review-card:hover {
+  will-change: transform;
+}
+
+/* Intersection observer performance hints */
+.observe-target {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 150px;
+}
+
+/* Enhanced video performance */
+video {
+  contain: layout style paint;
+  content-visibility: auto;
+  will-change: auto;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Reduced motion for better performance */
+.reduce-motion {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Layer promotion for smooth animations */
+.layer-promote {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* Performance optimized background attachments */
+[style*="background-attachment: fixed"] {
+  background-attachment: scroll !important;
+}
+
+/* Optimized backdrop filters */
+.backdrop-blur-sm {
+  backdrop-filter: blur(2px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(4px);
+}
+
+/* Title effect utility */
+.title-effect {
+  background: linear-gradient(
+    135deg,
+    hsl(210, 40%, 70%) 0%,
+    hsl(230, 50%, 80%) 25%,
+    hsl(250, 60%, 85%) 50%,
+    hsl(270, 50%, 75%) 75%,
+    hsl(210, 45%, 65%) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
+}
+
+/* Memory efficient animations */
+@keyframes optimized-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Auto-scroll animation for social proof */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+.animate-optimized-fade {
+  animation: optimized-fade 0.3s ease-out;
+}
+
+/* Efficient transforms */
+.transform-gpu {
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+/* Enhanced typography styles for blog content */
+.blog-content {
+  @apply text-gray-300 leading-relaxed;
+}
+
+.blog-content h1 {
+  @apply text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6 mt-6 sm:mt-8;
+}
+
+.blog-content h2 {
+  @apply text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 mt-5 sm:mt-6;
+}
+
+.blog-content h3 {
+  @apply text-lg sm:text-xl font-semibold text-white mb-2 sm:mb-3 mt-4 sm:mt-5;
+}
+
+.blog-content h4 {
+  @apply text-base sm:text-lg font-semibold text-white mb-2 mt-3 sm:mt-4;
+}
+
+.blog-content p {
+  @apply text-gray-300 mb-3 sm:mb-4 leading-relaxed text-sm sm:text-base;
+}
+
+.blog-content ul,
+.blog-content ol {
+  @apply text-gray-300 mb-3 sm:mb-4 pl-4 sm:pl-6 text-sm sm:text-base;
+}
+
+.blog-content li {
+  @apply mb-1 sm:mb-2;
+}
+
+.blog-content ul li {
+  @apply list-disc;
+}
+
+.blog-content ol li {
+  @apply list-decimal;
+}
+
+.blog-content blockquote {
+  @apply border-l-4 border-cyan-500 pl-3 sm:pl-4 italic text-gray-400 my-3 sm:my-4 text-sm sm:text-base;
+}
+
+.blog-content a {
+  @apply text-cyan-400 hover:text-cyan-300 underline min-h-[44px] inline-block;
+}
+
+.blog-content strong {
+  @apply font-bold text-white;
+}
+
+.blog-content em {
+  @apply italic;
+}
+
+.blog-content code {
+  @apply bg-gray-800 text-cyan-400 px-1 sm:px-2 py-1 rounded text-xs sm:text-sm;
+}
+
+.blog-content pre {
+  @apply bg-gray-900 text-gray-300 p-3 sm:p-4 rounded-lg overflow-x-auto mb-3 sm:mb-4 text-xs sm:text-sm;
+}
+
+.blog-content img {
+  @apply rounded-lg mb-3 sm:mb-4 w-full h-auto;
+}
+
+/* Gradient Animation for Service Headings */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient-flow 2s ease-in-out infinite;
+  will-change: background-position;
+}
+
+/* Float Animation */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Typewriter Animation */
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 0;
+  }
+  51%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  display: inline-block;
+  animation: typewriter 3s steps(20) 1s forwards;
+  width: 0;
+}
+
+.typewriter::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background-color: white;
+  animation: blink 1s infinite;
+  animation-delay: 4s;
+}
+
+/* Scroll animation for social proof */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 25s linear infinite;
+}
+
+/* ML11 Animation Styles */
+.ml11 {
+  font-weight: 700;
+}
+
+.ml11-text-wrapper {
+  position: relative;
+  display: inline-block;
+  padding-top: 0.1em;
+  padding-right: 0.05em;
+  padding-bottom: 0.15em;
+}
+
+.ml11-line {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  height: 100%;
+  width: 3px;
+  background-color: hsl(var(--primary));
+  transform-origin: 0 50%;
+  top: 0;
+}
+
+.ml11-letter {
+  display: inline-block;
+  line-height: 1em;
+  opacity: 0;
+}
+
+.ml11-word {
+  white-space: nowrap;
+  display: inline-block;
+}

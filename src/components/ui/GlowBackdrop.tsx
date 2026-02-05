@@ -1,0 +1,83 @@
+import React from 'react';
+
+interface GlowBackdropProps {
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
+  size?: 'small' | 'medium' | 'large';
+  color?: 'blue' | 'purple' | 'teal';
+  intensity?: 'low' | 'medium' | 'high';
+  className?: string;
+}
+
+const GlowBackdrop: React.FC<GlowBackdropProps> = ({ 
+  position = 'center', 
+  size = 'medium', 
+  color = 'blue',
+  intensity = 'medium',
+  className = ''
+}) => {
+  const getPositionClasses = () => {
+    switch (position) {
+      case 'top-left':
+        return 'top-0 left-0 -translate-x-1/2 -translate-y-1/2';
+      case 'top-right':
+        return 'top-0 right-0 translate-x-1/2 -translate-y-1/2';
+      case 'bottom-left':
+        return 'bottom-0 left-0 -translate-x-1/2 translate-y-1/2';
+      case 'bottom-right':
+        return 'bottom-0 right-0 translate-x-1/2 translate-y-1/2';
+      default:
+        return 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2';
+    }
+  };
+
+  const getSizeClasses = () => {
+    switch (size) {
+      case 'small':
+        return 'w-32 h-32 md:w-48 md:h-48';
+      case 'large':
+        return 'w-96 h-96 md:w-[32rem] md:h-[32rem]';
+      default:
+        return 'w-64 h-64 md:w-80 md:h-80';
+    }
+  };
+
+  const getColorClasses = () => {
+    switch (color) {
+      case 'purple':
+        return 'bg-purple-500/30';
+      case 'teal':
+        return 'bg-teal-500/30';
+      default:
+        return 'bg-blue-500/30';
+    }
+  };
+
+  const getIntensityClasses = () => {
+    switch (intensity) {
+      case 'low':
+        return 'opacity-40';
+      case 'high':
+        return 'opacity-90';
+      default:
+        return 'opacity-70';
+    }
+  };
+
+  return (
+    <div 
+      className={`
+        absolute ${getPositionClasses()} ${getSizeClasses()} 
+        ${getColorClasses()} ${getIntensityClasses()}
+        rounded-full blur-3xl pointer-events-none z-[1]
+        motion-reduce:animate-none ${className}
+      `}
+      style={{
+        filter: 'blur(100px)',
+        animation: 'pulse 6s ease-in-out infinite',
+        mixBlendMode: 'screen'
+      }}
+    />
+  );
+};
+
+export default GlowBackdrop;
