@@ -43,7 +43,7 @@ const AiPredictionHeader: React.FC = () => {
             <img
               src="/logo.png"
               alt="logo"
-              className="w-[4rem] md:w-[5rem] object-contain"
+              className="w-[6.5rem] md:w-[8.5rem] object-contain"
             />
             {/* <div className="flex flex-col leading-tight">
               <span className="text-sm font-semibold text-white tracking-wide">
