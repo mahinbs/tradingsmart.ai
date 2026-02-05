@@ -1,4 +1,4 @@
-import ProductCard, { Product } from "./ProductCard";
+import ProductCard, { type Product } from "./ProductCard";
 import useScrollAnimation from "@/hooks/use-scroll-animation";
 
 interface ProductGridProps {

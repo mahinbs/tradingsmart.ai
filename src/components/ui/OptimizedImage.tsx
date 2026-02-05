@@ -5,7 +5,6 @@ interface OptimizedImageProps {
   src: string;
   alt: string;
   className?: string;
-  blurDataURL?: string;
   priority?: boolean;
   onLoad?: () => void;
 }
@@ -14,7 +13,6 @@ const OptimizedImage = ({
   src, 
   alt, 
   className = '', 
-  blurDataURL,
   priority = false,
   onLoad 
 }: OptimizedImageProps) => {

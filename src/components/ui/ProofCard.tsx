@@ -1,11 +1,12 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { cn } from '../../lib/utils';
 
 interface ProofCardProps {
   title: string;
   subtitle: string;
   icon?: ReactNode;
-  variant?: 'default' | 'highlighted';
+  // NOTE: variant kept for potential future styling but unused currently
+  // variant?: 'default' | 'highlighted';
   className?: string;
   priceUsd?: string;
   revealOnInteraction?: boolean;
@@ -19,7 +20,6 @@ const ProofCard = ({
   title, 
   subtitle, 
   icon, 
-  variant = 'default',
   className,
   priceUsd,
   revealOnInteraction = false,

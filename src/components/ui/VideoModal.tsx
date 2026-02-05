@@ -1,6 +1,5 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog';
-import { Play } from 'lucide-react';
 
 interface VideoModalProps {
   isOpen: boolean;
