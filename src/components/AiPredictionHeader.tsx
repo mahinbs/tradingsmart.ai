@@ -35,7 +35,7 @@ const AiPredictionHeader: React.FC = () => {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-black/70 backdrop-blur-xl">
-        <div className="container flex items-center justify-between py-2.5 md:py-4">
+        <div className="container flex items-center justify-between py-2.5 lg:py-4">
           <div
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => scrollToSection("hero")}
@@ -43,7 +43,7 @@ const AiPredictionHeader: React.FC = () => {
             <img
               src="/logo.png"
               alt="logo"
-              className="w-[6.5rem] md:w-[8.5rem] object-contain"
+              className="w-[6.5rem] lg:w-[8.5rem] object-contain"
             />
             {/* <div className="flex flex-col leading-tight">
               <span className="text-sm font-semibold text-white tracking-wide">
@@ -56,12 +56,12 @@ const AiPredictionHeader: React.FC = () => {
           </div>
 
           {/* Desktop nav */}
-          <nav className="hidden gap-6 text-sm font-medium text-gray-300 md:flex">
+          <nav className="hidden gap-12 text-sm font-medium text-gray-300 lg:flex">
             {NAV_ITEMS.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className="relative inline-flex items-center gap-1 text-xs uppercase tracking-[0.2em] hover:text-white transition-colors"
+                className="relative inline-flex items-center gap-1 text-xs uppercase tracking-[0.2em] hover:text-white transition-colors cursor-pointer"
               >
                 <span>{item.label}</span>
                 <span className="absolute inset-x-0 -bottom-1 h-px scale-x-0 bg-gradient-to-r from-cyan-400 to-purple-500 transition-transform duration-200 origin-center group-hover:scale-x-100" />
@@ -71,7 +71,7 @@ const AiPredictionHeader: React.FC = () => {
 
           {/* Mobile menu button */}
           <button
-            className="inline-flex items-center justify-center rounded-full border border-white/15 p-2 text-gray-200 md:hidden"
+            className="inline-flex items-center justify-center rounded-full border border-white/15 p-2 text-gray-200 lg:hidden"
             onClick={() => setIsOpen(true)}
             aria-label="Open navigation"
           >
@@ -82,7 +82,7 @@ const AiPredictionHeader: React.FC = () => {
 
       {/* Mobile offcanvas menu */}
       <div
-        className={`fixed inset-0 z-50 transform transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed inset-0 z-50 transform transition-transform duration-300 ease-out lg:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         aria-hidden={!isOpen}
@@ -100,7 +100,7 @@ const AiPredictionHeader: React.FC = () => {
               <img
                 src="/logo.png"
                 alt="logo"
-                className="w-[4rem] md:w-[5rem] object-contain"
+                className="w-[4rem] lg:w-[5rem] object-contain"
               />
             </div>
             <button

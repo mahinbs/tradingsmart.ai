@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { Helmet } from 'react-helmet-async';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
     FaChartLine,
@@ -22,13 +24,49 @@ import { BsGraphUpArrow } from 'react-icons/bs';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../../components/ui/carousel';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
 import { Button } from '../../components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
+import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
+import { Label } from '../../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import AiPredictionHeader from '../../components/AiPredictionHeader';
 import AiPredictionFooter from '../../components/AiPredictionFooter';
 
 const AiStockPrediction = () => {
     const [activeTab, setActiveTab] = useState('stocks');
+    const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+    const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [api, setApi] = useState<CarouselApi>();
+    const navigate = useNavigate();
+
+    interface FormData {
+        name: string;
+        email: string;
+        phone: string;
+        message: string;
+        plan: string;
+    }
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        reset,
+        setValue,
+        watch,
+        formState: { errors }
+    } = useForm<FormData>({
+        defaultValues: {
+            name: '',
+            email: '',
+            phone: '',
+            message: '',
+            plan: ''
+        }
+    });
+
 
     React.useEffect(() => {
         if (!api) {
@@ -46,6 +84,47 @@ const AiStockPrediction = () => {
         stocks: { accuracy: '78%', active: '3 years', trades: '12,450', winRate: '72%' },
         forex: { accuracy: '82%', active: '4 years', trades: '45,200', winRate: '76%' },
         crypto: { accuracy: '74%', active: '2 years', trades: '8,900', winRate: '68%' }
+    };
+
+
+    const handleFormSubmit = async (data: FormData) => {
+        setIsSubmitting(true);
+
+        try {
+            const planNames = {
+                monthly: 'Monthly - $49/mo',
+                quarterly: 'Quarterly - $129/qtr',
+                lifetime: 'Lifetime - $499'
+            };
+
+            const emailBody = `Name : ${data.name}\nEmail : ${data.email}\nPhone : ${data.phone}\nInterested Plan : ${planNames[data.plan as keyof typeof planNames] || data.plan}\nMessage : \n ${data.message || 'N/A'}`;
+
+            const response = await fetch('https://send-mail-redirect-boostmysites.vercel.app/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    body: emailBody,
+                    name: 'Tradingsmart.AI',
+                    subject: `New Enquiry from ${data.name} - ${planNames[data.plan as keyof typeof planNames] || data.plan}`,
+                    to: 'partnerships@tradingsmart.ai'
+                })
+            });
+
+            if (response.ok) {
+                reset();
+                setIsEnquiryModalOpen(false);
+                navigate('/thank-you');
+            } else {
+                alert('Failed to submit form. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('An error occurred. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -85,7 +164,7 @@ const AiStockPrediction = () => {
                     <ScrollReveal delay={0.4}>
                         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.1] max-w-6xl mx-auto text-white drop-shadow-2xl">
                             AI-Powered Market <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 animate-gradient">Predictions</span>
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-blue-500 to-purple-600 animate-gradient">Predictions</span>
                         </h1>
                     </ScrollReveal>
 
@@ -98,10 +177,17 @@ const AiStockPrediction = () => {
 
                     <ScrollReveal delay={0.8}>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-                            <Button className="bg-cyan-500 text-black hover:bg-cyan-400 text-lg px-10 py-7 rounded-full shadow-[0_0_40px_rgba(6,182,212,0.3)] hover:shadow-[0_0_60px_rgba(6,182,212,0.5)] transition-all duration-300 hover:-translate-y-1">
+                            <Button
+                                onClick={() => setIsVideoModalOpen(true)}
+                                className="bg-cyan-500 text-black hover:bg-cyan-400 text-lg px-10 py-7 rounded-full shadow-[0_0_40px_rgba(6,182,212,0.3)] hover:shadow-[0_0_60px_rgba(6,182,212,0.5)] transition-all duration-300 hover:-translate-y-1"
+                            >
                                 View Live Demo
                             </Button>
-                            <Button variant="outline" className="border-gray-700 text-black hover:text-white hover:bg-white/5 bg-white backdrop-blur-sm text-lg px-10 py-7 rounded-full hover:border-gray-500 transition-all duration-300">
+                            <Button
+                                onClick={() => setIsEnquiryModalOpen(true)}
+                                variant="outline"
+                                className="border-gray-700 text-black hover:text-white hover:bg-white/5 bg-white backdrop-blur-sm text-lg px-10 py-7 rounded-full hover:border-gray-500 transition-all duration-300"
+                            >
                                 Check Accuracy Report
                             </Button>
                         </div>
@@ -238,7 +324,7 @@ const AiStockPrediction = () => {
 
                     <div className="relative">
                         {/* Connecting Line (Desktop) */}
-                        <div className="hidden md:block absolute top-10 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-900 to-transparent z-0"></div>
+                        <div className="hidden md:block absolute top-10 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-cyan-900 to-transparent z-0"></div>
 
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
                             {[
@@ -307,7 +393,7 @@ const AiStockPrediction = () => {
                                             <div className="flex justify-between items-center text-xs">
                                                 <span className="text-gray-500">Trend Strength</span>
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden"><div className="h-full w-[85%] bg-gradient-to-r from-green-600 to-green-400"></div></div>
+                                                    <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden"><div className="h-full w-[85%] bg-linear-to-r from-green-600 to-green-400"></div></div>
                                                     <span className="text-white font-bold">STRONG</span>
                                                 </div>
                                             </div>
@@ -458,7 +544,15 @@ const AiStockPrediction = () => {
                                 <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Live Predictions</li>
                                 <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Basic Support</li>
                             </ul>
-                            <Button className="w-full py-6 bg-white text-black hover:bg-gray-200 rounded-xl font-bold">Start Monthly</Button>
+                            <Button
+                                onClick={() => {
+                                    setValue('plan', 'monthly');
+                                    setIsEnquiryModalOpen(true);
+                                }}
+                                className="w-full py-6 bg-white text-black hover:bg-gray-200 rounded-xl font-bold"
+                            >
+                                Start Monthly
+                            </Button>
                         </div>
 
                         {/* Quarterly */}
@@ -472,7 +566,15 @@ const AiStockPrediction = () => {
                                 <li className="flex gap-3 text-sm text-white font-medium"><FaCheckCircle className="text-cyan-500 flex-shrink-0" /> Priority Alerts</li>
                                 <li className="flex gap-3 text-sm text-white font-medium"><FaCheckCircle className="text-cyan-500 flex-shrink-0" /> Strategy Session (1hr)</li>
                             </ul>
-                            <Button className="w-full py-7 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/25">Get Quarterly Access</Button>
+                            <Button
+                                onClick={() => {
+                                    setValue('plan', 'quarterly');
+                                    setIsEnquiryModalOpen(true);
+                                }}
+                                className="w-full py-7 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/25"
+                            >
+                                Get Quarterly Access
+                            </Button>
                         </div>
 
                         {/* Lifetime */}
@@ -484,7 +586,16 @@ const AiStockPrediction = () => {
                                 <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> All Future Updates</li>
                                 <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Private Discord Access</li>
                             </ul>
-                            <Button variant="outline" className="w-full py-6 bg-white text-black hover:bg-gray-200 rounded-xl font-bold">Get Lifetime</Button>
+                            <Button
+                                onClick={() => {
+                                    setValue('plan', 'lifetime');
+                                    setIsEnquiryModalOpen(true);
+                                }}
+                                variant="outline"
+                                className="w-full py-6 bg-white text-black hover:bg-gray-200 rounded-xl font-bold"
+                            >
+                                Get Lifetime
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -494,16 +605,21 @@ const AiStockPrediction = () => {
             <section id="demo" className="py-24 bg-zinc-950">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl md:text-5xl font-bold mb-8">See it in action</h2>
-                    <div className="max-w-4xl mx-auto aspect-video bg-zinc-900 rounded-2xl border border-gray-800 flex items-center justify-center relative group cursor-pointer overflow-hidden shadow-2xl">
-                        <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
-                        <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:scale-110 transition-transform relative z-10">
-                            {/* Corrected Icon usage later */}
-                            <FaPlay className="text-white text-3xl ml-1" />
-                        </div>
-                        <p className="absolute bottom-8 text-white font-medium z-10">Watch full market analysis video (2:34)</p>
+                    <div className="max-w-4xl mx-auto aspect-video rounded-2xl overflow-hidden shadow-2xl border border-gray-800">
+                        <iframe
+                            src="https://drive.google.com/file/d/1fM2jZ-PkUMO5f0dfp6DVPOzF0u8JxJ76/preview"
+                            className="w-full h-full"
+                            allow="autoplay"
+                            allowFullScreen
+                        />
                     </div>
                     <div className="mt-8">
-                        <Button className="bg-cyan-500 text-black hover:bg-cyan-400 font-bold px-8 py-6 rounded-full">Request Live Demo</Button>
+                        <Button
+                            onClick={() => setIsEnquiryModalOpen(true)}
+                            className="bg-cyan-500 text-black hover:bg-cyan-400 font-bold px-8 py-6 rounded-full"
+                        >
+                            Get Started
+                        </Button>
                     </div>
                 </div>
             </section>
@@ -537,7 +653,7 @@ const AiStockPrediction = () => {
                                                 <p className="text-gray-300 mb-6 italic text-lg leading-relaxed">{user.text}</p>
                                             </div>
                                             <div className="flex items-center gap-4 mt-auto pt-6 border-t border-white/5">
-                                                <div className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-black rounded-full flex items-center justify-center font-bold text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.2)]">{user.name[0]}</div>
+                                                <div className="w-12 h-12 bg-linear-to-br from-cyan-900 to-black rounded-full flex items-center justify-center font-bold text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.2)]">{user.name[0]}</div>
                                                 <div>
                                                     <div className="font-bold text-white text-base">{user.name} <span className="text-gray-500 font-normal text-sm ml-1">({user.loc})</span></div>
                                                     <div className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded inline-block mt-1">{user.profit}</div>
@@ -566,9 +682,9 @@ const AiStockPrediction = () => {
                         <strong>Liability:</strong> We accept no liability for any loss or damage, including without limitation to, any loss of profit, which may arise directly or indirectly from use of or reliance on such information.
                     </p>
                     <div className="pt-8 flex justify-center gap-6">
-                        <a href="#" className="hover:text-white underline">Terms of Service</a>
-                        <a href="#" className="hover:text-white underline">Privacy Policy</a>
-                        <a href="#" className="hover:text-white underline">Risk Disclaimer</a>
+                        <Link to="/terms-of-service" className="hover:text-white underline">Terms of Service</Link>
+                        <Link to="/privacy-policy" className="hover:text-white underline">Privacy Policy</Link>
+                        <Link to="/risk-disclaimer" className="hover:text-white underline">Risk Disclaimer</Link>
                     </div>
                 </div>
             </section>
@@ -587,15 +703,18 @@ const AiStockPrediction = () => {
                     <ScrollReveal>
                         <h2 className="text-5xl md:text-8xl font-black mb-12 text-white tracking-tighter leading-none drop-shadow-2xl">
                             Stop Gambling. <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-400 animate-gradient bg-300%">Start Predicting.</span>
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-white to-purple-400 animate-gradient bg-300%">Start Predicting.</span>
                         </h2>
                     </ScrollReveal>
 
                     <ScrollReveal delay={0.2}>
                         <div className="relative inline-block group">
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
-                            <Button className="relative bg-black text-white hover:bg-zinc-900 text-lg sm:text-xl md:text-2xl px-10 sm:px-16 py-9 rounded-full font-bold border border-white/10 shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-4 mx-auto">
-                                Try the AI Demo Now <FaArrowRight />
+                            <div className="absolute -inset-0.5 bg-linear-to-r from-cyan-500 to-purple-600 rounded-full blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+                            <Button
+                                onClick={() => setIsVideoModalOpen(true)}
+                                className="relative bg-black text-white hover:bg-zinc-900 text-lg sm:text-xl md:text-2xl px-10 sm:px-16 py-9 rounded-full font-bold border border-white/10 shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-4 mx-auto"
+                            >
+                                AI Demo <FaArrowRight />
                             </Button>
                         </div>
                         <p className="mt-10 text-gray-500 text-xs md:text-sm tracking-[0.3em] uppercase font-medium">Limited Access for New Accounts</p>
@@ -604,6 +723,160 @@ const AiStockPrediction = () => {
             </section>
 
             <AiPredictionFooter />
+
+            {/* Video Modal */}
+            <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
+                <DialogContent className="max-w-5xl w-[95vw] bg-zinc-950 border-cyan-500/30 p-0">
+                    <DialogHeader className="p-6 pb-4">
+                        <DialogTitle className="text-2xl font-bold text-white">AI Stock Prediction Demo</DialogTitle>
+                    </DialogHeader>
+                    <div className="aspect-video w-full">
+                        <iframe
+                            key={isVideoModalOpen ? 'video-playing' : 'video-reset'}
+                            src="https://drive.google.com/file/d/1fM2jZ-PkUMO5f0dfp6DVPOzF0u8JxJ76/preview?autoplay=1"
+                            className="w-full h-full"
+                            allow="autoplay"
+                            allowFullScreen
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Enquiry Form Modal */}
+            <Dialog open={isEnquiryModalOpen} onOpenChange={setIsEnquiryModalOpen}>
+                <DialogContent className="max-w-2xl bg-zinc-950 border-cyan-500/30 text-white">
+                    <DialogHeader>
+                        <DialogTitle className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-cyan-400">
+                            Request Accuracy Report
+                        </DialogTitle>
+                        <p className="text-gray-400 text-sm mt-2">Fill out the form below and we'll send you a detailed accuracy report</p>
+                    </DialogHeader>
+
+                    <form className="space-y-6 mt-6" onSubmit={handleSubmit(handleFormSubmit)}>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* Name Field */}
+                            <div className="space-y-2">
+                                <Label htmlFor="name" className="text-gray-300 font-medium">
+                                    Full Name <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    placeholder="John Doe"
+                                    {...register('name', { required: 'Full name is required' })}
+                                    className={`bg-black/50 border-white/10 text-white placeholder:text-gray-600 focus:border-cyan-500 focus:ring-cyan-500/20 transition-all ${errors.name ? 'border-red-500' : ''}`}
+                                />
+                                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+                            </div>
+
+                            {/* Email Field */}
+                            <div className="space-y-2">
+                                <Label htmlFor="email" className="text-gray-300 font-medium">
+                                    Email Address <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="john@example.com"
+                                    {...register('email', {
+                                        required: 'Email is required',
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: 'Invalid email address'
+                                        }
+                                    })}
+                                    className={`bg-black/50 border-white/10 text-white placeholder:text-gray-600 focus:border-cyan-500 focus:ring-cyan-500/20 transition-all ${errors.email ? 'border-red-500' : ''}`}
+                                />
+                                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* Phone Field */}
+                            <div className="space-y-2">
+                                <Label htmlFor="phone" className="text-gray-300 font-medium">
+                                    Phone Number <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="phone"
+                                    type="tel"
+                                    placeholder="+91 98765 43210"
+                                    {...register('phone', {
+                                        required: 'Phone number is required',
+                                        pattern: {
+                                            value: /^\+?[0-9]+$/,
+                                            message: 'Please enter a valid phone number'
+                                        }
+                                    })}
+                                    className={`bg-black/50 border-white/10 text-white placeholder:text-gray-600 focus:border-cyan-500 focus:ring-cyan-500/20 transition-all ${errors.phone ? 'border-red-500' : ''}`}
+                                />
+                                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
+                            </div>
+
+                            {/* Plan Selection */}
+                            <div className="space-y-2">
+                                <Label htmlFor="plan" className="text-gray-300 font-medium">
+                                    Interested Plan <span className="text-red-500">*</span>
+                                </Label>
+                                <Controller
+                                    name="plan"
+                                    control={control}
+                                    rules={{ required: 'Please select a plan' }}
+                                    render={({ field }) => (
+                                        <Select
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        >
+                                            <SelectTrigger className={`bg-black/50 border-white/10 text-white focus:border-cyan-500 focus:ring-cyan-500/20 ${errors.plan ? 'border-red-500' : ''}`}>
+                                                <SelectValue placeholder="Select a plan" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                                                <SelectItem value="monthly" className="focus:bg-cyan-500/20 focus:text-cyan-400">Monthly - $49/mo</SelectItem>
+                                                <SelectItem value="quarterly" className="focus:bg-cyan-500/20 focus:text-cyan-400">Quarterly - $129/qtr</SelectItem>
+                                                <SelectItem value="lifetime" className="focus:bg-cyan-500/20 focus:text-cyan-400">Lifetime - $499</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                                {errors.plan && <p className="text-red-500 text-xs mt-1">{errors.plan.message}</p>}
+                            </div>
+                        </div>
+
+                        {/* Message Field */}
+                        <div className="space-y-2">
+                            <Label htmlFor="message" className="text-gray-300 font-medium">
+                                Message (Optional)
+                            </Label>
+                            <Textarea
+                                id="message"
+                                placeholder="Tell us about your trading experience and what you're looking for..."
+                                rows={4}
+                                {...register('message')}
+                                className="bg-black/50 border-white/10 text-white placeholder:text-gray-600 focus:border-cyan-500 focus:ring-cyan-500/20 transition-all resize-none"
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="flex gap-4 pt-4">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsEnquiryModalOpen(false)}
+                                className="flex-1 border-white/10 text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
