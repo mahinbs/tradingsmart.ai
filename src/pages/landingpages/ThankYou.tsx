@@ -47,7 +47,7 @@ const ThankYou = () => {
                             Your request has been submitted successfully.
                         </p>
                         <p className="text-gray-400 text-lg leading-relaxed max-w-lg mx-auto">
-                            We've received your enquiry and our team will get back to you within <span className="text-cyan-400 font-semibold">24 hours</span> with a detailed accuracy report and personalized strategy analysis.
+                            We've received your enquiry and our team will get back to you within <span className="text-cyan-400 font-semibold">24 hours</span>
                         </p>
                     </div>
 

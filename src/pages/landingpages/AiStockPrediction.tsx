@@ -23,7 +23,8 @@ import { BsGraphUpArrow } from 'react-icons/bs';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../../components/ui/carousel';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
 import { Button } from '../../components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogClose } from '../../components/ui/dialog';
+import { X } from 'lucide-react';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Label } from '../../components/ui/label';
@@ -33,7 +34,6 @@ import AiPredictionFooter from '../../components/AiPredictionFooter';
 
 const AiStockPrediction = () => {
     const [activeTab, setActiveTab] = useState('stocks');
-    const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -84,6 +84,11 @@ const AiStockPrediction = () => {
         crypto: { accuracy: '74%', active: '2 years', trades: '8,900', winRate: '68%' }
     };
 
+    const scrollToDemoSection = () => {
+        const el = document.getElementById('demo');
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     const handleFormSubmit = async (data: FormData) => {
         setIsSubmitting(true);
@@ -176,7 +181,7 @@ const AiStockPrediction = () => {
                     <ScrollReveal delay={0.8}>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
                             <Button
-                                onClick={() => setIsVideoModalOpen(true)}
+                                onClick={scrollToDemoSection}
                                 className="bg-cyan-500 text-black hover:bg-cyan-400 text-lg px-10 py-7 rounded-full shadow-[0_0_40px_rgba(6,182,212,0.3)] hover:shadow-[0_0_60px_rgba(6,182,212,0.5)] transition-all duration-300 hover:-translate-y-1"
                             >
                                 View Live Demo
@@ -638,11 +643,11 @@ const AiStockPrediction = () => {
                         >
                             <CarouselContent className="-ml-4">
                                 {[
-                                    { name: "Arjun K.", loc: "Mumbai", text: "The probability score has completely changed how I manage risk. No more guessing.", profit: "+24% this month" },
-                                    { name: "Vikram S.", loc: "Bangalore", text: "I treat this as a confirmation tool. If my analysis matches the AI, I enter size. Simple.", profit: "Consistent Wins" },
-                                    { name: "Rohan M.", loc: "Delhi", text: "Finally, software that doesn't just spam buy/sell signals. It gives me context for Nifty options.", profit: "Option Buyer" },
-                                    { name: "Priya D.", loc: "Hyderabad", text: "I was skeptical at first, but the backtesting data is undeniable. It keeps me out of bad trades.", profit: "+18% this month" },
-                                    { name: "Amit B.", loc: "Pune", text: "The sentiment analysis is spot on. It warned me about the market crash 2 days before it happened.", profit: "Saved Portfolio" }
+                                    { name: "Ahmed Rahman", loc: "Dubai, UAE", text: "The probability score has completely changed how I manage risk. No more guessing.", profit: "+24% this month" },
+                                    { name: "Narin Saetang", loc: "Bangkok, Thailand", text: "I treat this as a confirmation tool. If my analysis matches the AI, I enter size. Simple.", profit: "Consistent Wins" },
+                                    { name: "Aisha Latif", loc: "Kuala Lumpur, Malaysia", text: "Finally, software that doesn't just spam buy/sell signals. It gives me context for index and FX options.", profit: "Option Buyer" },
+                                    { name: "Leo Wong", loc: "Hong Kong", text: "I was skeptical at first, but the backtesting data is undeniable. It keeps me out of bad trades.", profit: "+18% this month" },
+                                    { name: "Chloe Martin", loc: "Sydney, Australia", text: "The sentiment analysis is spot on. It warned me about a market dump two days before it happened.", profit: "Saved Portfolio" }
                                 ].map((user, i) => (
                                     <CarouselItem key={i} className="pl-4 md:basis-1/2 lg:basis-1/3">
                                         <div className="bg-zinc-900 p-8 rounded-2xl border border-white/5 relative h-full flex flex-col justify-between hover:border-cyan-500/30 transition-colors">
@@ -651,9 +656,10 @@ const AiStockPrediction = () => {
                                                 <p className="text-gray-300 mb-6 italic text-lg leading-relaxed">{user.text}</p>
                                             </div>
                                             <div className="flex items-center gap-4 mt-auto pt-6 border-t border-white/5">
-                                                <div className="w-12 h-12 bg-linear-to-br from-cyan-900 to-black rounded-full flex items-center justify-center font-bold text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.2)]">{user.name[0]}</div>
+                                                <div className="w-12 h-12 min-w-12 bg-linear-to-br from-cyan-900 to-black rounded-full flex items-center justify-center font-bold text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.2)]">{user.name[0]}</div>
                                                 <div>
-                                                    <div className="font-bold text-white text-base">{user.name} <span className="text-gray-500 font-normal text-sm ml-1">({user.loc})</span></div>
+                                                    <div className="font-bold text-white text-base">{user.name}</div>
+                                                    <div className="mb-1"> <span className="text-gray-500 font-normal text-sm ml-1">({user.loc})</span></div>
                                                     <div className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded inline-block mt-1">{user.profit}</div>
                                                 </div>
                                             </div>
@@ -709,7 +715,7 @@ const AiStockPrediction = () => {
                         <div className="relative inline-block group">
                             <div className="absolute -inset-0.5 bg-linear-to-r from-cyan-500 to-purple-600 rounded-full blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
                             <Button
-                                onClick={() => setIsVideoModalOpen(true)}
+                                onClick={scrollToDemoSection}
                                 className="relative bg-black text-white hover:bg-zinc-900 text-lg sm:text-xl md:text-2xl px-10 sm:px-16 py-9 rounded-full font-bold border border-white/10 shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-4 mx-auto"
                             >
                                 AI Demo <FaArrowRight />
@@ -722,33 +728,21 @@ const AiStockPrediction = () => {
 
             <AiPredictionFooter />
 
-            {/* Video Modal */}
-            <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
-                <DialogContent className="max-w-5xl w-[95vw] bg-zinc-950 border-cyan-500/30 p-0">
-                    <DialogHeader className="p-6 pb-4">
-                        <DialogTitle className="text-2xl font-bold text-white">AI Stock Prediction Demo</DialogTitle>
-                    </DialogHeader>
-                    <div className="aspect-video w-full">
-                        <iframe
-                            key={isVideoModalOpen ? 'video-playing' : 'video-reset'}
-                            src="https://drive.google.com/file/d/1fM2jZ-PkUMO5f0dfp6DVPOzF0u8JxJ76/preview?autoplay=1"
-                            className="w-full h-full"
-                            allow="autoplay"
-                            allowFullScreen
-                        />
-                    </div>
-                </DialogContent>
-            </Dialog>
-
             {/* Enquiry Form Modal */}
             <Dialog open={isEnquiryModalOpen} onOpenChange={setIsEnquiryModalOpen}>
-                <DialogContent className="max-w-2xl bg-zinc-950 border-cyan-500/30 text-white">
-                    <DialogHeader>
-                        <DialogTitle className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-cyan-400">
-                            Request Accuracy Report
+                <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] bg-zinc-950/95 border border-cyan-500/40 text-white p-4 sm:p-6 rounded-2xl shadow-[0_0_40px_rgba(34,211,238,0.35)] overflow-y-auto">
+                    <div className="relative border-b border-white/10 pb-3 sm:pb-4 mb-4 sm:mb-6 pr-10">
+                        <DialogTitle className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-cyan-400 text-left">
+                            Contact Us
                         </DialogTitle>
-                        <p className="text-gray-400 text-sm mt-2">Fill out the form below and we'll send you a detailed accuracy report</p>
-                    </DialogHeader>
+                        <p className="text-gray-400 text-xs sm:text-sm mt-2 text-left">
+                            Fill out the form below and we'll get back to you as soon as possible.
+                        </p>
+                        <DialogClose className="absolute right-0 top-0 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/40 text-gray-300 shadow-md hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black transition">
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Close</span>
+                        </DialogClose>
+                    </div>
 
                     <form className="space-y-6 mt-6" onSubmit={handleSubmit(handleFormSubmit)}>
                         <div className="grid md:grid-cols-2 gap-6">
