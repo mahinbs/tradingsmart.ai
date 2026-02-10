@@ -9,7 +9,6 @@ import {
     FaBrain,
     FaCheckCircle,
     FaTimesCircle,
-    FaPlay,
     FaRobot,
     FaGlobe,
     FaChartBar,
@@ -55,7 +54,6 @@ const AiStockPrediction = () => {
         control,
         reset,
         setValue,
-        watch,
         formState: { errors }
     } = useForm<FormData>({
         defaultValues: {
