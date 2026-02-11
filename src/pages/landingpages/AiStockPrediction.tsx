@@ -184,14 +184,14 @@ const AiStockPrediction = () => {
                                 onClick={scrollToDemoSection}
                                 className="bg-cyan-500 text-black hover:bg-cyan-400 text-lg px-10 py-7 rounded-full shadow-[0_0_40px_rgba(6,182,212,0.3)] hover:shadow-[0_0_60px_rgba(6,182,212,0.5)] transition-all duration-300 hover:-translate-y-1"
                             >
-                                View Live Demo
+                                Video Demo
                             </Button>
                             <Button
                                 onClick={() => setIsEnquiryModalOpen(true)}
                                 variant="outline"
                                 className="border-gray-700 text-black hover:text-white hover:bg-white/5 bg-white backdrop-blur-sm text-lg px-10 py-7 rounded-full hover:border-gray-500 transition-all duration-300"
                             >
-                                Check Accuracy Report
+                                Contact Us
                             </Button>
                         </div>
                     </ScrollReveal>
