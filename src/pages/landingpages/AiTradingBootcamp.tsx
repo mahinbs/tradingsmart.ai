@@ -72,8 +72,7 @@ Serious about investing in tools: ${data.seriousInvest} \n
                     body: emailBody,
                     name: 'Tradingsmart.AI',
                     subject: `New Bootcamp Application from ${data.name}`,
-                    to: 'mpranavprem@gmail.com'
-                    // to: 'partnerships@tradingsmart.ai'
+                    to: 'partnerships@tradingsmart.ai'
                 })
             });
 
