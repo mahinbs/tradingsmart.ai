@@ -181,10 +181,10 @@ const AiStockPrediction = () => {
                     <ScrollReveal delay={0.8}>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
                             <Button
-                                onClick={scrollToDemoSection}
+                                onClick={() => navigate('/ai-trading-bootcamp')}
                                 className="bg-cyan-500 text-black hover:bg-cyan-400 text-lg px-10 py-7 rounded-full shadow-[0_0_40px_rgba(6,182,212,0.3)] hover:shadow-[0_0_60px_rgba(6,182,212,0.5)] transition-all duration-300 hover:-translate-y-1"
                             >
-                                Video Demo
+                                Join AI Trading Bootcamp
                             </Button>
                             <Button
                                 onClick={() => setIsEnquiryModalOpen(true)}

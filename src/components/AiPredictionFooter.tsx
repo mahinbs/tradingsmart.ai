@@ -6,7 +6,6 @@ const NAV_ITEMS = [
   { id: "how-it-works", label: "How it works" },
   { id: "pricing", label: "Pricing" },
   { id: "demo", label: "Demo" },
-  { id: "testimonials", label: "Testimonials" },
 ];
 
 const scrollToSection = (id: string) => {

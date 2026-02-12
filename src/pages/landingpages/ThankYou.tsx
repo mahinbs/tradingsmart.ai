@@ -1,10 +1,13 @@
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import AiPredictionHeader from '../../components/AiPredictionHeader';
 import AiPredictionFooter from '../../components/AiPredictionFooter';
 
 const ThankYou = () => {
+    const location = useLocation();
+    const { title, message } = location.state || {}; // Destructure dynamic data
+
     return (
         <div className="min-h-screen bg-black text-white font-sans selection:bg-cyan-500 selection:text-black overflow-x-hidden">
             <Helmet>
@@ -38,17 +41,25 @@ const ThankYou = () => {
                     </div>
 
                     {/* Thank You Message */}
-                    <h1 className="text-5xl md:text-7xl font-black mb-6 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-blue-400 to-purple-400">
-                        Thank You!
+                    <h1 className="text-5xl md:text-7xl font-black mb-6 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-blue-400 to-purple-400 leading-tight">
+                        {title || "Thank You!"}
                     </h1>
 
                     <div className="space-y-6 mb-12">
-                        <p className="text-2xl text-gray-200 font-bold">
-                            Your request has been submitted successfully.
-                        </p>
-                        <p className="text-gray-400 text-lg leading-relaxed max-w-lg mx-auto">
-                            We've received your enquiry and our team will get back to you within <span className="text-cyan-400 font-semibold">24 hours</span>
-                        </p>
+                        {message ? (
+                            <p className="text-2xl text-gray-200 font-bold">
+                                {message}
+                            </p>
+                        ) : (
+                            <>
+                                <p className="text-2xl text-gray-200 font-bold">
+                                    Your request has been submitted successfully.
+                                </p>
+                                <p className="text-gray-400 text-lg leading-relaxed max-w-lg mx-auto">
+                                    We've received your enquiry and our team will get back to you within <span className="text-cyan-400 font-semibold">24 hours</span>
+                                </p>
+                            </>
+                        )}
                     </div>
 
                     {/* Return Home Button */}
