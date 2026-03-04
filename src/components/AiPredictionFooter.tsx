@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const NAV_ITEMS = [
   { id: "hero", label: "Overview" },
@@ -6,6 +7,7 @@ const NAV_ITEMS = [
   { id: "how-it-works", label: "How it works" },
   { id: "pricing", label: "Pricing" },
   { id: "demo", label: "Demo" },
+  { id: "blogs", label: "Blogs", isRoute: true, path: "/blogs" },
 ];
 
 const scrollToSection = (id: string) => {
@@ -24,6 +26,19 @@ const scrollToSection = (id: string) => {
 
 const AiPredictionFooter: React.FC = () => {
   const year = new Date().getFullYear();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (id: string) => {
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        scrollToSection(id);
+      }, 100);
+    } else {
+      scrollToSection(id);
+    }
+  };
 
   return (
     <footer className="border-t border-white/10 bg-black/90 py-8 text-xs text-gray-400">
@@ -49,13 +64,23 @@ const AiPredictionFooter: React.FC = () => {
 
         <nav className="flex flex-wrap justify-center gap-3 md:justify-end">
           {NAV_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              className="rounded-full border border-white/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-gray-300 hover:border-cyan-500/60 hover:text-white hover:bg-cyan-500/10 transition-colors"
-            >
-              {item.label}
-            </button>
+            item.isRoute ? (
+              <Link
+                key={item.id}
+                to={item.path!}
+                className="rounded-full border border-white/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-gray-300 hover:border-cyan-500/60 hover:text-white hover:bg-cyan-500/10 transition-colors"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                className="rounded-full border border-white/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-gray-300 hover:border-cyan-500/60 hover:text-white hover:bg-cyan-500/10 transition-colors"
+              >
+                {item.label}
+              </button>
+            )
           ))}
         </nav>
       </div>

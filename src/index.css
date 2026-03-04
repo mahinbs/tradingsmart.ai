@@ -787,3 +787,56 @@ video {
   white-space: nowrap;
   display: inline-block;
 }
+
+/* Blog editor – ReactQuill dark theme overrides */
+.blog-editor-quill .ql-container.ql-snow {
+  background: #020617 !important; /* slate-950 */
+  color: #e5e7eb !important;      /* gray-200 */
+}
+
+.blog-editor-quill .ql-editor {
+  background: #020617 !important;
+  color: #e5e7eb !important;
+}
+
+.blog-editor-quill .ql-editor,
+.blog-editor-quill .ql-editor * {
+  color: #e5e7eb !important;
+}
+
+.blog-editor-quill .ql-editor.ql-blank::before {
+  color: #9ca3af !important;
+  font-style: normal;
+}
+
+.blog-editor-quill .ql-editor a {
+  color: #67e8f9 !important;
+}
+
+.blog-editor-quill .ql-editor blockquote {
+  border-left-color: #22d3ee;
+  color: #d1d5db !important;
+}
+
+/* Quill header dropdown (Normal / Heading 1 / Heading 2) */
+.blog-editor-quill .ql-picker-label,
+.blog-editor-quill .ql-picker-label::before {
+  color: #e5e7eb !important;
+}
+
+.blog-editor-quill .ql-picker-options {
+  background: #020617 !important;
+  border-color: #1f2937 !important;
+}
+
+.blog-editor-quill .ql-picker-options .ql-picker-item::before {
+  color: #e5e7eb !important;
+}
+
+.blog-editor-quill .ql-picker-options .ql-picker-item:hover {
+  background: #111827 !important;
+}
+
+.blog-editor-quill .ql-picker-item.ql-selected::before {
+  color: #38bdf8 !important;
+}

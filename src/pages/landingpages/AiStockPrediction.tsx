@@ -31,6 +31,7 @@ import { Label } from '../../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import AiPredictionHeader from '../../components/AiPredictionHeader';
 import AiPredictionFooter from '../../components/AiPredictionFooter';
+import BlogsSlider from '../../components/BlogsSlider';
 
 const AiStockPrediction = () => {
     const [activeTab, setActiveTab] = useState('stocks');
@@ -592,7 +593,10 @@ const AiStockPrediction = () => {
                 </div>
             </section>
 
-            {/* 10. Live Demo Placeholder */}
+            {/* 10. Blogs Slider */}
+            <BlogsSlider />
+
+            {/* 11. Live Demo Placeholder */}
             <section id="demo" className="py-24 bg-zinc-950">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl md:text-5xl font-bold mb-8">See it in action</h2>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const NAV_ITEMS = [
   { id: "hero", label: "Overview" },
@@ -7,6 +8,7 @@ const NAV_ITEMS = [
   { id: "how-it-works", label: "How it works" },
   { id: "pricing", label: "Pricing" },
   { id: "demo", label: "Demo" },
+  { id: "blogs", label: "Blogs", isRoute: true, path: "/blogs" },
 ];
 
 const scrollToSection = (id: string) => {
@@ -25,9 +27,18 @@ const scrollToSection = (id: string) => {
 
 const AiPredictionHeader: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleNavClick = (id: string) => {
-    scrollToSection(id);
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        scrollToSection(id);
+      }, 100);
+    } else {
+      scrollToSection(id);
+    }
     setIsOpen(false);
   };
 
@@ -37,7 +48,7 @@ const AiPredictionHeader: React.FC = () => {
         <div className="container flex items-center justify-between py-2.5 lg:py-4">
           <div
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => scrollToSection("hero")}
+            onClick={() => handleNavClick("hero")}
           >
             <img
               src="/logo.png"
@@ -57,14 +68,25 @@ const AiPredictionHeader: React.FC = () => {
           {/* Desktop nav */}
           <nav className="hidden gap-12 text-sm font-medium text-gray-300 lg:flex">
             {NAV_ITEMS.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className="relative inline-flex items-center gap-1 text-xs uppercase tracking-[0.2em] hover:text-white transition-colors cursor-pointer"
-              >
-                <span>{item.label}</span>
-                <span className="absolute inset-x-0 -bottom-1 h-px scale-x-0 bg-gradient-to-r from-cyan-400 to-purple-500 transition-transform duration-200 origin-center group-hover:scale-x-100" />
-              </button>
+              item.isRoute ? (
+                <Link
+                  key={item.id}
+                  to={item.path!}
+                  className="relative inline-flex items-center gap-1 text-xs uppercase tracking-[0.2em] hover:text-white transition-colors cursor-pointer"
+                >
+                  <span>{item.label}</span>
+                  <span className="absolute inset-x-0 -bottom-1 h-px scale-x-0 bg-linear-to-r from-cyan-400 to-purple-500 transition-transform duration-200 origin-center group-hover:scale-x-100" />
+                </Link>
+              ) : (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className="relative inline-flex items-center gap-1 text-xs uppercase tracking-[0.2em] hover:text-white transition-colors cursor-pointer"
+                >
+                  <span>{item.label}</span>
+                  <span className="absolute inset-x-0 -bottom-1 h-px scale-x-0 bg-linear-to-r from-cyan-400 to-purple-500 transition-transform duration-200 origin-center group-hover:scale-x-100" />
+                </button>
+              )
             ))}
           </nav>
 
@@ -81,9 +103,8 @@ const AiPredictionHeader: React.FC = () => {
 
       {/* Mobile offcanvas menu */}
       <div
-        className={`fixed inset-0 z-50 transform transition-transform duration-300 ease-out lg:hidden ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed inset-0 z-50 transform transition-transform duration-300 ease-out lg:hidden ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         aria-hidden={!isOpen}
       >
         {/* Backdrop */}
@@ -113,16 +134,30 @@ const AiPredictionHeader: React.FC = () => {
 
           <nav className="flex flex-col gap-2 px-6 py-4 text-sm">
             {NAV_ITEMS.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className="flex items-center justify-between rounded-xl px-3 py-3 text-left text-gray-200 hover:bg-white/5 hover:text-white transition-colors"
-              >
-                <span className="text-xs uppercase tracking-[0.2em]">
-                  {item.label}
-                </span>
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
-              </button>
+              item.isRoute ? (
+                <Link
+                  key={item.id}
+                  to={item.path!}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between rounded-xl px-3 py-3 text-left text-gray-200 hover:bg-white/5 hover:text-white transition-colors"
+                >
+                  <span className="text-xs uppercase tracking-[0.2em]">
+                    {item.label}
+                  </span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
+                </Link>
+              ) : (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className="flex items-center justify-between rounded-xl px-3 py-3 text-left text-gray-200 hover:bg-white/5 hover:text-white transition-colors"
+                >
+                  <span className="text-xs uppercase tracking-[0.2em]">
+                    {item.label}
+                  </span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
+                </button>
+              )
             ))}
           </nav>
         </div>
