@@ -95,9 +95,8 @@ const AiStockPrediction = () => {
 
         try {
             const planNames = {
-                monthly: 'Monthly - $49/mo',
-                quarterly: 'Quarterly - $129/qtr',
-                lifetime: 'Lifetime - $499'
+                oneYear: '1 Year Access - $1,999',
+                twoYears: '2 Years Access - $2,499',
             };
 
             const emailBody = `Name : ${data.name}\nEmail : ${data.email}\nPhone : ${data.phone}\nInterested Plan : ${planNames[data.plan as keyof typeof planNames] || data.plan}\nMessage : \n ${data.message || 'N/A'}`;
@@ -535,69 +534,58 @@ const AiStockPrediction = () => {
             <section id="pricing" className="py-24 bg-black relative">
                 <div className="container mx-auto px-4">
                     <h2 className="text-3xl md:text-5xl font-bold mb-6 text-center">Simple Pricing</h2>
-                    <p className="text-center text-gray-400 mb-16">Choose your access level.</p>
+                    <p className="text-center text-gray-400 mb-16">Choose the access duration that fits you best.</p>
 
-                    <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
-                        {/* Monthly */}
-                        <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/10 flex flex-col hover:border-gray-600 transition-colors">
-                            <h3 className="text-xl font-bold text-gray-400 mb-2">Monthly</h3>
-                            <div className="text-4xl font-bold mb-6">$49<span className="text-lg text-gray-500 font-normal">/mo</span></div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> All Market Access</li>
-                                <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Live Predictions</li>
-                                <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Basic Support</li>
+                    <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+                        {/* 1 Year Plan */}
+                        <div className="p-8 rounded-3xl bg-zinc-900/60 border border-white/10 flex flex-col hover:border-cyan-500/40 hover:shadow-[0_0_35px_rgba(34,211,238,0.25)] transition-all">
+                            <h3 className="text-xl font-bold text-gray-200 mb-2">1 Year Access</h3>
+                            <p className="text-sm text-gray-400 mb-4">Perfect if you want to validate the edge over a full market cycle.</p>
+                            <div className="text-4xl font-bold mb-6 tracking-tight">
+                                $1,999
+                                <span className="text-lg text-gray-500 font-normal ml-1">/year</span>
+                            </div>
+                            <ul className="space-y-3 mb-8 flex-1 text-sm text-gray-300">
+                                <li className="flex gap-3"><FaCheckCircle className="text-green-500 flex-shrink-0" /> All market modules (Stocks, Forex, Crypto)</li>
+                                <li className="flex gap-3"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Live probability dashboard</li>
+                                <li className="flex gap-3"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Email support</li>
                             </ul>
                             <Button
                                 onClick={() => {
-                                    setValue('plan', 'monthly');
+                                    setValue('plan', 'oneYear');
                                     setIsEnquiryModalOpen(true);
                                 }}
                                 className="w-full py-6 bg-white text-black hover:bg-gray-200 rounded-xl font-bold"
                             >
-                                Start Monthly
+                                Get 1 Year Access
                             </Button>
                         </div>
 
-                        {/* Quarterly */}
-                        <div className="p-10 rounded-[2rem] bg-gradient-to-b from-gray-900 via-zinc-900 to-black border border-cyan-500 shadow-2xl shadow-cyan-900/20 transform md:scale-110 flex flex-col relative z-20">
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500 text-black text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg shadow-cyan-500/50">Best Value</div>
-                            <h3 className="text-xl font-bold text-cyan-400 mb-2">Quarterly</h3>
-                            <div className="text-4xl font-bold mb-2 text-white">$129<span className="text-lg text-gray-400 font-normal">/qtr</span></div>
-                            <div className="text-sm text-green-400 mb-6">Save 15%</div>
-                            <ul className="space-y-5 mb-10 flex-1">
-                                <li className="flex gap-3 text-sm text-white font-medium"><FaCheckCircle className="text-cyan-500 flex-shrink-0" /> All Market Access</li>
-                                <li className="flex gap-3 text-sm text-white font-medium"><FaCheckCircle className="text-cyan-500 flex-shrink-0" /> Priority Alerts</li>
-                                <li className="flex gap-3 text-sm text-white font-medium"><FaCheckCircle className="text-cyan-500 flex-shrink-0" /> Strategy Session (1hr)</li>
+                        {/* 2 Years Plan */}
+                        <div className="p-10 rounded-[2rem] bg-gradient-to-b from-gray-900 via-zinc-900 to-black border border-cyan-500 shadow-2xl shadow-cyan-900/30 transform md:scale-105 flex flex-col relative z-20">
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500 text-black text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg shadow-cyan-500/50">
+                                Best Value
+                            </div>
+                            <h3 className="text-xl font-bold text-cyan-400 mb-2">2 Years Access</h3>
+                            <p className="text-sm text-gray-300 mb-4">Lock in pricing, ride through multiple cycles, and let the AI keep adapting.</p>
+                            <div className="text-4xl font-bold mb-2 text-white tracking-tight">
+                                $2,499
+                                <span className="text-lg text-gray-400 font-normal ml-1">/2 years</span>
+                            </div>
+                            {/* <div className="text-sm text-green-400 mb-6">Effective: $1,249.50 per year</div> */}
+                            <ul className="space-y-3 mb-10 flex-1 text-sm text-white">
+                                <li className="flex gap-3"><FaCheckCircle className="text-cyan-500 flex-shrink-0" /> Everything in 1 Year plan</li>
+                                <li className="flex gap-3"><FaCheckCircle className="text-cyan-500 flex-shrink-0" /> Priority feature updates</li>
+                                <li className="flex gap-3"><FaCheckCircle className="text-cyan-500 flex-shrink-0" /> Quarterly strategy review call</li>
                             </ul>
                             <Button
                                 onClick={() => {
-                                    setValue('plan', 'quarterly');
+                                    setValue('plan', 'twoYears');
                                     setIsEnquiryModalOpen(true);
                                 }}
                                 className="w-full py-7 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/25"
                             >
-                                Get Quarterly Access
-                            </Button>
-                        </div>
-
-                        {/* Lifetime */}
-                        <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/10 flex flex-col hover:border-gray-600 transition-colors">
-                            <h3 className="text-xl font-bold text-gray-400 mb-2">Lifetime</h3>
-                            <div className="text-4xl font-bold mb-6">$499<span className="text-lg text-gray-500 font-normal">/one-time</span></div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Forever Access</li>
-                                <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> All Future Updates</li>
-                                <li className="flex gap-3 text-sm text-gray-300"><FaCheckCircle className="text-green-500 flex-shrink-0" /> Private Discord Access</li>
-                            </ul>
-                            <Button
-                                onClick={() => {
-                                    setValue('plan', 'lifetime');
-                                    setIsEnquiryModalOpen(true);
-                                }}
-                                variant="outline"
-                                className="w-full py-6 bg-white text-black hover:bg-gray-200 rounded-xl font-bold"
-                            >
-                                Get Lifetime
+                                Get 2 Years Access
                             </Button>
                         </div>
                     </div>
@@ -823,9 +811,12 @@ const AiStockPrediction = () => {
                                                 <SelectValue placeholder="Select a plan" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-zinc-900 border-white/10 text-white">
-                                                <SelectItem value="monthly" className="focus:bg-cyan-500/20 focus:text-cyan-400">Monthly - $49/mo</SelectItem>
-                                                <SelectItem value="quarterly" className="focus:bg-cyan-500/20 focus:text-cyan-400">Quarterly - $129/qtr</SelectItem>
-                                                <SelectItem value="lifetime" className="focus:bg-cyan-500/20 focus:text-cyan-400">Lifetime - $499</SelectItem>
+                                                <SelectItem value="oneYear" className="focus:bg-cyan-500/20 focus:text-cyan-400">
+                                                    1 Year Access - $1,999
+                                                </SelectItem>
+                                                <SelectItem value="twoYears" className="focus:bg-cyan-500/20 focus:text-cyan-400">
+                                                    2 Years Access - $2,499
+                                                </SelectItem>
                                             </SelectContent>
                                         </Select>
                                     )}
