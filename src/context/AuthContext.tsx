@@ -1,50 +1,64 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { supabase } from '../lib/supabaseClient';
 
 interface AuthContextType {
-    isAuthenticated: boolean;
-    login: (email: string, password: string) => boolean;
-    logout: () => void;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-    useEffect(() => {
-        const storedAuth = localStorage.getItem('isAdminAuthenticated');
-        if (storedAuth === 'true') {
-            setIsAuthenticated(true);
-        }
-    }, []);
+  useEffect(() => {
+    let isMounted = true;
 
-    const login = (email: string, password: string) => {
-        // Accept any non-empty credentials — backend integration to be added later
-        if (email.trim() && password.trim()) {
-            setIsAuthenticated(true);
-            localStorage.setItem('isAdminAuthenticated', 'true');
-            return true;
-        }
-        return false;
+    const initAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!isMounted) return;
+      setIsAuthenticated(!!data.session);
     };
 
-    const logout = () => {
-        setIsAuthenticated(false);
-        localStorage.removeItem('isAdminAuthenticated');
-    };
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
 
-    return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    void initAuth();
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      return false;
+    }
+    return true;
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+  };
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

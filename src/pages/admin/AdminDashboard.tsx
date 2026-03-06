@@ -5,29 +5,31 @@ import type { BlogPost } from '../../context/BlogContext';
 import { FaEdit, FaTrash, FaPlus, FaSearch } from 'react-icons/fa';
 
 const AdminDashboard = () => {
-    const { blogs, deleteBlog } = useBlogs();
-    const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const { blogs, deleteBlog } = useBlogs();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-    const filteredBlogs = blogs.filter(blog =>
-        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const filteredBlogs = blogs.filter(
+    (blog) =>
+      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      blog.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    const handleDelete = (id: string, title: string) => {
-        if (window.confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
-            setIsDeleting(id);
-            // Simulate network delay for UX
-            setTimeout(() => {
-                deleteBlog(id);
-                setIsDeleting(null);
-            }, 500);
-        }
-    };
+  const handleDelete = async (id: string, title: string) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${title}"? This action cannot be undone.`
+      )
+    ) {
+      setIsDeleting(id);
+      await deleteBlog(id);
+      setIsDeleting(null);
+    }
+  };
 
-    return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+  return (
+    <div className="space-y-8 animate-in fade-in duration-500">
             {/* Header Area */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>

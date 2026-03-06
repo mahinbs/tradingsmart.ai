@@ -1,73 +1,186 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useBlogs } from '../../context/BlogContext';
-import { FaArrowLeft, FaSave, FaImage, FaAlignLeft } from 'react-icons/fa';
+import { supabase } from '../../lib/supabaseClient';
+import { FaArrowLeft, FaSave, FaImage, FaAlignLeft, FaCloudUploadAlt, FaUser } from 'react-icons/fa';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
+const BLOG_IMAGES_BUCKET = 'blog-images';
+
+function getTodayIndiaYMD(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+}
+
+function formatYmdToDisplay(ymd: string): string {
+  if (!ymd) return '';
+  const d = new Date(ymd + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function parseDisplayDateToYmd(display: string): string {
+  if (!display?.trim()) return getTodayIndiaYMD();
+  const d = new Date(display);
+  if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+  const months: Record<string, string> = {
+    January: '01', February: '02', March: '03', April: '04', May: '05', June: '06',
+    July: '07', August: '08', September: '09', October: '10', November: '11', December: '12',
+  };
+  const parts = display.replace(',', '').trim().split(/\s+/);
+  if (parts.length >= 3) {
+    const month = months[parts[0]];
+    const day = parts[1].padStart(2, '0');
+    const year = parts[2];
+    if (month && day && year) return `${year}-${month}-${day}`;
+  }
+  return getTodayIndiaYMD();
+}
+
 const BlogEditor = () => {
-    const { id } = useParams<{ id: string }>();
-    const isEditing = Boolean(id);
-    const { getBlog, addBlog, updateBlog } = useBlogs();
-    const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditing = Boolean(id);
+  const { getBlog, addBlog, updateBlog } = useBlogs();
+  const navigate = useNavigate();
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        title: '',
-        excerpt: '',
-        content: '',
-        image: '',
-        category: '',
-        readTime: '5 min read'
-    });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [avatarUploadError, setAvatarUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    excerpt: '',
+    content: '',
+    image: '',
+    category: '',
+    readTime: '5 min read',
+    authorName: 'Admin User',
+    authorAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=150&auto=format&fit=crop',
+    dateYmd: getTodayIndiaYMD(),
+  });
 
-    useEffect(() => {
-        if (isEditing && id) {
-            const existingBlog = getBlog(id);
-            if (existingBlog) {
-                setFormData({
-                    title: existingBlog.title,
-                    excerpt: existingBlog.excerpt,
-                    content: existingBlog.content,
-                    image: existingBlog.image,
-                    category: existingBlog.category,
-                    readTime: existingBlog.readTime
-                });
-            } else {
-                // If ID is not found, redirect to dashboard
-                navigate('/admin/dashboard');
-            }
-        }
-    }, [id, isEditing, getBlog, navigate]);
+  useEffect(() => {
+    if (isEditing && id) {
+      const existingBlog = getBlog(id);
+      if (existingBlog) {
+        setFormData({
+          title: existingBlog.title,
+          excerpt: existingBlog.excerpt,
+          content: existingBlog.content,
+          image: existingBlog.image,
+          category: existingBlog.category,
+          readTime: existingBlog.readTime,
+          authorName: existingBlog.author.name,
+          authorAvatar: existingBlog.author.avatar,
+          dateYmd: parseDisplayDateToYmd(existingBlog.date),
+        });
+      } else {
+        navigate('/admin/dashboard');
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, dateYmd: getTodayIndiaYMD() }));
+    }
+  }, [id, isEditing, getBlog, navigate]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    const handleContentChange = (content: string) => {
-        setFormData(prev => ({ ...prev, content }));
-    };
+  const handleContentChange = (content: string) => {
+    setFormData((prev) => ({ ...prev, content }));
+  };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setImageUploadError('Please select an image file (JPEG, PNG, WebP, etc.).');
+      return;
+    }
+    setImageUploadError(null);
+    setIsUploadingImage(true);
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `blog/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+    const { data, error } = await supabase.storage
+      .from(BLOG_IMAGES_BUCKET)
+      .upload(path, file, { contentType: file.type, upsert: false });
+    setIsUploadingImage(false);
+    e.target.value = '';
+    if (error) {
+      setImageUploadError(error.message || 'Upload failed.');
+      return;
+    }
+    const { data: urlData } = supabase.storage.from(BLOG_IMAGES_BUCKET).getPublicUrl(data.path);
+    setFormData((prev) => ({ ...prev, image: urlData.publicUrl }));
+  };
 
-        // Simulate network delay
-        setTimeout(() => {
-            if (isEditing && id) {
-                updateBlog(id, formData);
-            } else {
-                addBlog(formData);
-            }
-            setIsLoading(false);
-            navigate('/admin/dashboard');
-        }, 600);
-    };
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setAvatarUploadError('Please select an image file (JPEG, PNG, WebP, etc.).');
+      return;
+    }
+    setAvatarUploadError(null);
+    setIsUploadingAvatar(true);
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `authors/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+    const { data, error } = await supabase.storage
+      .from(BLOG_IMAGES_BUCKET)
+      .upload(path, file, { contentType: file.type, upsert: false });
+    setIsUploadingAvatar(false);
+    e.target.value = '';
+    if (error) {
+      setAvatarUploadError(error.message || 'Upload failed.');
+      return;
+    }
+    const { data: urlData } = supabase.storage.from(BLOG_IMAGES_BUCKET).getPublicUrl(data.path);
+    setFormData((prev) => ({ ...prev, authorAvatar: urlData.publicUrl }));
+  };
 
-    return (
-        <div className="max-w-4xl space-y-6 animate-in fade-in duration-500">
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const dateDisplay = formatYmdToDisplay(formData.dateYmd);
+    const author = { name: formData.authorName, avatar: formData.authorAvatar };
+
+    if (isEditing && id) {
+      await updateBlog(id, {
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        image: formData.image,
+        category: formData.category,
+        readTime: formData.readTime,
+        date: dateDisplay,
+        author,
+      });
+    } else {
+      await addBlog({
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        image: formData.image,
+        category: formData.category,
+        readTime: formData.readTime,
+        date: dateDisplay,
+        author,
+      });
+    }
+
+    setIsLoading(false);
+    navigate('/admin/dashboard');
+  };
+
+  return (
+    <div className="max-w-4xl space-y-6 animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -161,26 +274,147 @@ const BlogEditor = () => {
                         />
                     </div>
 
-                    {/* Image URL */}
-                    <div className="space-y-2">
-                        <label htmlFor="image" className="block text-sm font-medium text-gray-300">
-                            Featured Image URL *
-                        </label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
-                                <FaImage />
+                    {/* Author & Date */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label htmlFor="authorName" className="block text-sm font-medium text-gray-300">
+                                Author name *
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                                    <FaUser />
+                                </div>
+                                <input
+                                    type="text"
+                                    id="authorName"
+                                    name="authorName"
+                                    value={formData.authorName}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="e.g., Sarah Jenkins"
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                                />
                             </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="dateYmd" className="block text-sm font-medium text-gray-300">
+                                Post date *
+                            </label>
                             <input
-                                type="url"
-                                id="image"
-                                name="image"
-                                value={formData.image}
+                                type="date"
+                                id="dateYmd"
+                                name="dateYmd"
+                                value={formData.dateYmd}
                                 onChange={handleChange}
                                 required
-                                placeholder="https://images.unsplash.com/photo-..."
-                                className="w-full bg-black/50 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
                             />
+                            <p className="text-gray-500 text-xs">Defaults to current date (India). You can set a past date.</p>
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-300">
+                            Author profile picture *
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-3 items-start">
+                            <div className="relative flex-1 w-full">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                                    <FaImage />
+                                </div>
+                                <input
+                                    type="url"
+                                    id="authorAvatar"
+                                    name="authorAvatar"
+                                    value={formData.authorAvatar}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Profile picture URL or upload below"
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                                />
+                            </div>
+                            <input
+                                ref={avatarInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleAvatarUpload}
+                            />
+                            <button
+                                type="button"
+                                disabled={isUploadingAvatar}
+                                onClick={() => avatarInputRef.current?.click()}
+                                className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500 transition-all font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                                {isUploadingAvatar ? (
+                                    <AiOutlineLoading3Quarters className="animate-spin" />
+                                ) : (
+                                    <FaCloudUploadAlt />
+                                )}
+                                {isUploadingAvatar ? 'Uploading…' : 'Upload photo'}
+                            </button>
+                        </div>
+                        {avatarUploadError && (
+                            <p className="text-red-500 text-xs font-medium">{avatarUploadError}</p>
+                        )}
+                        {formData.authorAvatar && (
+                            <div className="mt-2 flex items-center gap-3">
+                                <img
+                                    src={formData.authorAvatar}
+                                    alt="Author"
+                                    className="w-12 h-12 rounded-full border border-white/10 object-cover"
+                                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                                />
+                                <span className="text-gray-400 text-sm">Preview</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Featured Image: upload or URL */}
+                    <div className="space-y-2">
+                        <label htmlFor="image" className="block text-sm font-medium text-gray-300">
+                            Featured Image *
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="relative flex-1">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                                    <FaImage />
+                                </div>
+                                <input
+                                    type="url"
+                                    id="image"
+                                    name="image"
+                                    value={formData.image}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Paste image URL or upload below"
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                                />
+                            </div>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleImageUpload}
+                            />
+                            <button
+                                type="button"
+                                disabled={isUploadingImage}
+                                onClick={() => fileInputRef.current?.click()}
+                                className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500 transition-all font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                                {isUploadingImage ? (
+                                    <AiOutlineLoading3Quarters className="animate-spin" />
+                                ) : (
+                                    <FaCloudUploadAlt />
+                                )}
+                                {isUploadingImage ? 'Uploading…' : 'Upload image'}
+                            </button>
+                        </div>
+                        {imageUploadError && (
+                            <p className="text-red-500 text-xs font-medium">{imageUploadError}</p>
+                        )}
                         {formData.image && (
                             <div className="mt-4 rounded-xl overflow-hidden border border-white/10 aspect-video max-w-sm">
                                 <img src={formData.image} alt="Preview" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />

@@ -5,37 +5,35 @@ import { FaLock, FaArrowRight } from 'react-icons/fa';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const AdminLogin = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-    const { login, isAuthenticated } = useAuth();
-    const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-    if (isAuthenticated) {
-        return <Navigate to="/admin/dashboard" replace />;
+  if (isAuthenticated) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    const success = await login(email, password);
+    setIsLoading(false);
+
+    if (success) {
+      navigate('/admin/dashboard');
+    } else {
+      setError('Invalid email or password.');
     }
+  };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setIsLoading(true);
-
-        // Simulate a slight network delay
-        setTimeout(() => {
-            const success = login(email, password);
-            setIsLoading(false);
-            if (success) {
-                navigate('/admin/dashboard');
-            } else {
-                setError('Invalid password.');
-            }
-        }, 800);
-    };
-
-    return (
-        <div className="min-h-screen bg-black text-white font-sans flex items-center justify-center relative overflow-hidden">
+  return (
+    <div className="min-h-screen bg-black text-white font-sans flex items-center justify-center relative overflow-hidden">
             {/* Background Effects */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-screen"></div>
