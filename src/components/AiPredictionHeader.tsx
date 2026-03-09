@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import logoImg from "../assets/logo.png";
 
 const NAV_ITEMS = [
   { id: "hero", label: "Overview" },
@@ -51,8 +52,8 @@ const AiPredictionHeader: React.FC = () => {
             onClick={() => handleNavClick("hero")}
           >
             <img
-              src="/logo.png"
-              alt="logo"
+              src={logoImg}
+              alt="TradingSmart.ai"
               className="w-[6.5rem] lg:w-[8.5rem] object-contain"
             />
             {/* <div className="flex flex-col leading-tight">
@@ -118,8 +119,8 @@ const AiPredictionHeader: React.FC = () => {
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
             <div className="flex items-center gap-2">
               <img
-                src="/logo.png"
-                alt="logo"
+                src={logoImg}
+                alt="TradingSmart.ai"
                 className="w-[4rem] lg:w-[5rem] object-contain"
               />
             </div>

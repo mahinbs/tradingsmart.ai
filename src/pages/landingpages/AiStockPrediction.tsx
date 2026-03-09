@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate } from 'react-router-dom';
+import heroBg from '../../assets/ai_stock_hero_bg.webp';
 
 import {
     FaChartLine,
@@ -143,7 +144,7 @@ const AiStockPrediction = () => {
             <section id="hero" className="relative min-h-screen flex items-center justify-center pt-40 pb-20 px-4 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     {/* Hero Background Image */}
-                    <div className="absolute inset-0 bg-[url('/ai_stock_hero_bg.webp')] bg-cover bg-top opacity-90 mix-blend-screen"></div>
+                    <div className="absolute inset-0 bg-cover bg-top opacity-90 mix-blend-screen" style={{ backgroundImage: `url(${heroBg})` }}></div>
 
                     {/* Overlay Gradients for Depth */}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black z-10"></div>

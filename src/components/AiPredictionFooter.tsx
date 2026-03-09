@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import logoImg from "../assets/logo.png";
 
 const NAV_ITEMS = [
   { id: "hero", label: "Overview" },
@@ -45,8 +46,8 @@ const AiPredictionFooter: React.FC = () => {
       <div className="container flex flex-col items-center gap-4 text-center md:flex-row md:justify-between md:text-left">
         <div className="space-y-2">
           <img
-            src="/logo.png"
-            alt="logo"
+            src={logoImg}
+            alt="TradingSmart.ai"
             className="w-[7.5rem] md:w-[10rem]"
           />
           <p className="text-sm font-semibold text-white">
